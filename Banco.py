@@ -19,10 +19,8 @@ menu = """
 # saque: keyworld - sugestao de argumentos: saldo, valor, extrato, limite, numero_saques, limites_saques
 # sugestao de retorno: saldo e extrato
 
-def saque(valor_saque, numero_limite_saques, valor_limite_saque):
-    global Saldo
+def saque(Saldo, Extrato, valor_saque, numero_limite_saques, valor_limite_saque):
     global contador
-    global Extrato
     
     if(valor_saque < 0):
         print("Valor de saque inválido!")
@@ -40,14 +38,13 @@ def saque(valor_saque, numero_limite_saques, valor_limite_saque):
             Extrato += f"Valor saque: R${valor_saque: .2f}\n"
             print(Saldo)
             print(Extrato)
-    return Saldo, Extrato
+    return Saldo
 
 # deposito: positional only - sugestao de argumentos: saldo, valor, extrato
 # sugestao de retorno: saldo e extrato
 
-def deposito(valor_deposito):
-    global Saldo
-    global Extrato
+def deposito(Saldo, valor_deposito, Extrato):
+
     if(valor_deposito < 0):
         print("Valor inválido!")
     else:
@@ -56,13 +53,13 @@ def deposito(valor_deposito):
         Extrato += f"Valor depósito: R${valor_deposito: .2f}\n"
         print(Extrato)
         print(Saldo)
-    return Saldo, Extrato
+    return Saldo
 
 # extrato: positional only e keyword only. Argumento posicional: saldo. Argumento nomeado: extrato
 
-def exibir_extrato():
-    global Saldo
-    global Extrato
+def exibir_extrato(Saldo, Extrato):
+    #global Saldo
+    #global Extrato
     print(f"""
 ..........EXTRATO..........""")
     
@@ -93,7 +90,7 @@ def cadastro_cliente(nome, data_nascimento, cpf, logradouro, numero, bairro, cid
     clientes["Endereço"]["Bairro"] = bairro
     clientes["Endereço"]["Cidade/Estado"] = cidade_estado
     
-    print(dados_clientes)
+    #print(dados_clientes)
     return dados_clientes
 
 # criar funcao de cadastrar conta corrente: armazenar em lista, A conta e composta por: agencia, numero da conta e usuario.
@@ -119,12 +116,10 @@ def cadastro_conta(clientes, cpf):
 
 # Dica: Para vincular um usuario a uma conta, filtre a lista de usuarios buscando o numero do CPF
 
-cadastro_cliente("Carol", "16/12/1987", "23075043893", "Avenida Uchoa", "393", "Vila Xavier", "Araraquara/SP")
+#cadastro_cliente("Carol", "16/12/1987", "23075043893", "Avenida Uchoa", "393", "Vila Xavier", "Araraquara/SP")
 #cadastro_cliente("jessica", "16/12/1987", "23075043894", "Avenida Uchoa", "393", "Vila Xavier", "Araraquara/SP")
 #cadastro_cliente("michelle", "16/12/1987", "23075043895", "Avenida Uchoa", "393", "Vila Xavier", "Araraquara/SP")
 #cadastro_cliente("ray", "16/12/1987", "23075043896", "Avenida Uchoa", "393", "Vila Xavier", "Araraquara/SP")
-
-#print(list(cadastro_cliente))
 
 #cadastro_conta(lista_clientes,"23075043893")
 
@@ -146,14 +141,16 @@ while True:
     
     if(Operacao == "S"):
         valor_saque = float(input("Digite o valor que deseja sacar: "))
-        saque(valor_saque = valor_saque, numero_limite_saques = LIMITE_QTD_SAQUE, valor_limite_saque = LIMITE_VALOR_SAQUE)
+        Saldo = saque(Saldo = Saldo, Extrato = Extrato, valor_saque = valor_saque, numero_limite_saques = LIMITE_QTD_SAQUE, valor_limite_saque = LIMITE_VALOR_SAQUE)
+        print(Saldo)
      
     elif(Operacao == "E"):
-        exibir_extrato()
+        exibir_extrato(Saldo, Extrato)
 
     elif(Operacao == "D"):
         valor_deposito = float(input("Digite o valor que deseja depositar: "))
-        deposito(valor_deposito)
+        Saldo = deposito(Saldo, valor_deposito, Extrato)
+        print(Saldo)
         
     elif(Operacao == "Q"):
         print("Obrigada por utilizar nossos serviços!")
@@ -161,6 +158,3 @@ while True:
     
     else:
         print("Operação inválida")
-
-
-
