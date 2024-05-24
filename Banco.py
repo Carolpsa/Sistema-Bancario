@@ -17,9 +17,8 @@ menu = """
     -> """
 
 # saque: keyworld - sugestao de argumentos: saldo, valor, extrato, limite, numero_saques, limites_saques
-# sugestao de retorno: saldo e extrato
 
-def saque(Saldo, Extrato, valor_saque, numero_limite_saques, valor_limite_saque):
+def saque(Saldo, valor_saque, Extrato, numero_limite_saques, valor_limite_saque):
     global contador
     
     if(valor_saque < 0):
@@ -36,12 +35,7 @@ def saque(Saldo, Extrato, valor_saque, numero_limite_saques, valor_limite_saque)
             saldo_final_saque = Saldo - valor_saque
             Saldo = saldo_final_saque
             Extrato += f"Valor saque: R${valor_saque: .2f}\n"
-            print(Saldo)
-            print(Extrato)
-    return Saldo
-
-# deposito: positional only - sugestao de argumentos: saldo, valor, extrato
-# sugestao de retorno: saldo e extrato
+    return Saldo, Extrato
 
 def deposito(Saldo, valor_deposito, Extrato):
 
@@ -51,15 +45,9 @@ def deposito(Saldo, valor_deposito, Extrato):
         Saldo_final_deposito = valor_deposito + Saldo 
         Saldo = Saldo_final_deposito
         Extrato += f"Valor depósito: R${valor_deposito: .2f}\n"
-        print(Extrato)
-        print(Saldo)
-    return Saldo
+    return Saldo, Extrato
 
-# extrato: positional only e keyword only. Argumento posicional: saldo. Argumento nomeado: extrato
-
-def exibir_extrato(Saldo, Extrato):
-    #global Saldo
-    #global Extrato
+def exibir_extrato(Saldo, Extrato = Extrato):
     print(f"""
 ..........EXTRATO..........""")
     
@@ -73,14 +61,12 @@ Saldo atual: R$ {Saldo:.2f}
         
 .............................
             """)
-
-# criar funcao cadastrar cliente: armazenar em lista. Cliente e composto por: nome, data de nascimento, CPF e endereco
-# o endereco e uma string com o formato: logradouro, numero, bairro, cidade/sigla estado
+    return Saldo, Extrato
 
 def cadastro_cliente(nome, data_nascimento, cpf, logradouro, numero, bairro, cidade_estado):
-    dados_clientes=[]
+    #dados_clientes=[]
     clientes = {}
-    dados_clientes = [clientes]
+    #dados_clientes = [clientes]
     clientes["Nome"] = nome
     clientes["Data de nascimento"] = data_nascimento
     clientes["CPF"] = cpf
@@ -90,8 +76,8 @@ def cadastro_cliente(nome, data_nascimento, cpf, logradouro, numero, bairro, cid
     clientes["Endereço"]["Bairro"] = bairro
     clientes["Endereço"]["Cidade/Estado"] = cidade_estado
     
-    #print(dados_clientes)
-    return dados_clientes
+    print(clientes)
+    return clientes
 
 # criar funcao de cadastrar conta corrente: armazenar em lista, A conta e composta por: agencia, numero da conta e usuario.
 # Numero da conta e sequencial, comecando em 1
@@ -116,10 +102,11 @@ def cadastro_conta(clientes, cpf):
 
 # Dica: Para vincular um usuario a uma conta, filtre a lista de usuarios buscando o numero do CPF
 
-#cadastro_cliente("Carol", "16/12/1987", "23075043893", "Avenida Uchoa", "393", "Vila Xavier", "Araraquara/SP")
-#cadastro_cliente("jessica", "16/12/1987", "23075043894", "Avenida Uchoa", "393", "Vila Xavier", "Araraquara/SP")
-#cadastro_cliente("michelle", "16/12/1987", "23075043895", "Avenida Uchoa", "393", "Vila Xavier", "Araraquara/SP")
-#cadastro_cliente("ray", "16/12/1987", "23075043896", "Avenida Uchoa", "393", "Vila Xavier", "Araraquara/SP")
+# cliente_1 = cadastro_cliente("Carol", "16/12/1987", "23075043893", "Avenida Uchoa", "393", "Vila Xavier", "Araraquara/SP")
+# cliente_2 = cadastro_cliente("jessica", "16/12/1987", "23075043894", "Avenida Uchoa", "393", "Vila Xavier", "Araraquara/SP")
+# cliente_3 = cadastro_cliente("michelle", "16/12/1987", "23075043895", "Avenida Uchoa", "393", "Vila Xavier", "Araraquara/SP")
+# cliente_4 = cadastro_cliente("ray", "16/12/1987", "23075043896", "Avenida Uchoa", "393", "Vila Xavier", "Araraquara/SP")
+
 
 #cadastro_conta(lista_clientes,"23075043893")
 
@@ -137,20 +124,24 @@ while True:
         bairro = input("Digite o bairro: ")
         cidade_estado = input("Digite cidade_estado: ")
         
-        cadastro_cliente(nome, data_nascimento, cpf, logradouro, numero, bairro, cidade_estado)
+        lista_cliente = []
+
+        teste = cadastro_cliente(nome, data_nascimento, cpf, logradouro, numero, bairro, cidade_estado)
+
+        lista_cliente.append(teste)
+
+        print(lista_cliente)
     
     if(Operacao == "S"):
         valor_saque = float(input("Digite o valor que deseja sacar: "))
-        Saldo = saque(Saldo = Saldo, Extrato = Extrato, valor_saque = valor_saque, numero_limite_saques = LIMITE_QTD_SAQUE, valor_limite_saque = LIMITE_VALOR_SAQUE)
-        print(Saldo)
+        Saldo, Extrato = saque(Saldo = Saldo, Extrato = Extrato, valor_saque = valor_saque, numero_limite_saques = LIMITE_QTD_SAQUE, valor_limite_saque = LIMITE_VALOR_SAQUE)
      
     elif(Operacao == "E"):
-        exibir_extrato(Saldo, Extrato)
+        exibir_extrato(Saldo, Extrato = Extrato)
 
     elif(Operacao == "D"):
         valor_deposito = float(input("Digite o valor que deseja depositar: "))
-        Saldo = deposito(Saldo, valor_deposito, Extrato)
-        print(Saldo)
+        Saldo, Extrato = deposito(Saldo, valor_deposito, Extrato)
         
     elif(Operacao == "Q"):
         print("Obrigada por utilizar nossos serviços!")
