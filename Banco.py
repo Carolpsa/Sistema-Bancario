@@ -2,7 +2,9 @@ LIMITE_VALOR_SAQUE = 500.00
 LIMITE_QTD_SAQUE = 3
 Saldo = 0.00
 contador = 0
+contador_conta = 0
 Extrato = ""
+lista_clientes=[]
 menu = """ 
     ..........MENU..........
     
@@ -10,13 +12,10 @@ menu = """
     Digite D para Depósito
     Digite E para Extrato
     Digite Q para Sair
-    Digite C para cadastrar
     
     .........................
     
     -> """
-
-# saque: keyworld - sugestao de argumentos: saldo, valor, extrato, limite, numero_saques, limites_saques
 
 def saque(Saldo, valor_saque, Extrato, numero_limite_saques, valor_limite_saque):
     global contador
@@ -38,7 +37,6 @@ def saque(Saldo, valor_saque, Extrato, numero_limite_saques, valor_limite_saque)
     return Saldo, Extrato
 
 def deposito(Saldo, valor_deposito, Extrato):
-
     if(valor_deposito < 0):
         print("Valor inválido!")
     else:
@@ -64,9 +62,7 @@ Saldo atual: R$ {Saldo:.2f}
     return Saldo, Extrato
 
 def cadastro_cliente(nome, data_nascimento, cpf, logradouro, numero, bairro, cidade_estado):
-    #dados_clientes=[]
     clientes = {}
-    #dados_clientes = [clientes]
     clientes["Nome"] = nome
     clientes["Data de nascimento"] = data_nascimento
     clientes["CPF"] = cpf
@@ -75,62 +71,34 @@ def cadastro_cliente(nome, data_nascimento, cpf, logradouro, numero, bairro, cid
     clientes["Endereço"]["Nº"] = numero
     clientes["Endereço"]["Bairro"] = bairro
     clientes["Endereço"]["Cidade/Estado"] = cidade_estado
-    
-    print(clientes)
     return clientes
 
-# criar funcao de cadastrar conta corrente: armazenar em lista, A conta e composta por: agencia, numero da conta e usuario.
-# Numero da conta e sequencial, comecando em 1
-# Numero da agencia e fixo 0001
-# usuario pode ter mais de uma conta, mas uma conta nao pode pertencer a mais de um usuario 
-
 def cadastro_conta(clientes, cpf):
-    global contador
+    global contador_conta
     conta = {}
     for cliente in clientes:
         if (cliente["CPF"] == cpf):
-            print("Cliente cadastrado")
             conta["CPF"] = cpf
             conta["Nome"] = cliente["Nome"]
-            contador += 1
-            conta["Numero da Conta"] = contador
+            contador_conta += 1
+            conta["Numero da Conta"] = contador_conta
             conta["Agência"] = "0001"
-            print(conta)
-        else:
-            print("Cliente não cadastrado")
-    return conta
+            return conta
+    return print("Cliente não cadastrado")
 
-# Dica: Para vincular um usuario a uma conta, filtre a lista de usuarios buscando o numero do CPF
+lista_clientes.append(cadastro_cliente("Carol", "16/12/87", "01", "Rua 01", "01", "Jardim 01", "Araraquara/SP"))
+lista_clientes.append(cadastro_cliente("Michelle", "16/11/1987", "02", "Rua 02", "02", "Jardim 02", "Araraquara/SP"))
+lista_clientes.append(cadastro_cliente("Ray", "18/12/1997", "03", "Rua 03", "03", "Jardim 03", "Araraquara/SP"))
 
-# cliente_1 = cadastro_cliente("Carol", "16/12/1987", "23075043893", "Avenida Uchoa", "393", "Vila Xavier", "Araraquara/SP")
-# cliente_2 = cadastro_cliente("jessica", "16/12/1987", "23075043894", "Avenida Uchoa", "393", "Vila Xavier", "Araraquara/SP")
-# cliente_3 = cadastro_cliente("michelle", "16/12/1987", "23075043895", "Avenida Uchoa", "393", "Vila Xavier", "Araraquara/SP")
-# cliente_4 = cadastro_cliente("ray", "16/12/1987", "23075043896", "Avenida Uchoa", "393", "Vila Xavier", "Araraquara/SP")
-
-
-#cadastro_conta(lista_clientes,"23075043893")
+cadastro_conta(lista_clientes, "01")
+cadastro_conta(lista_clientes, "02")
+cadastro_conta(lista_clientes, "03")
+cadastro_conta(lista_clientes, "04")
 
 while True: 
 
     Operacao = input(menu)
     Operacao = Operacao.upper()
-    
-    if(Operacao == "C"):
-        nome = input("Digite o nome: ")
-        data_nascimento = input("Digite a data de nascimento: ")
-        cpf = input("Digite o cpf: ")
-        logradouro = input("Digite o logradouro: ")
-        numero = input("Digite o numero: ")
-        bairro = input("Digite o bairro: ")
-        cidade_estado = input("Digite cidade_estado: ")
-        
-        lista_cliente = []
-
-        teste = cadastro_cliente(nome, data_nascimento, cpf, logradouro, numero, bairro, cidade_estado)
-
-        lista_cliente.append(teste)
-
-        print(lista_cliente)
     
     if(Operacao == "S"):
         valor_saque = float(input("Digite o valor que deseja sacar: "))
