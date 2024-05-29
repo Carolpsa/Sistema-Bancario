@@ -31,7 +31,7 @@ menu_cadastro = """
     
     -> """
 
-def saque(saldo, valor_saque, extrato, numero_limite_saques, valor_limite_saque, contador):
+def saque(*, saldo, valor_saque, extrato, numero_limite_saques, valor_limite_saque, contador):
     if(valor_saque < 0):
         print("Valor de saque inválido!")
     else: 
@@ -48,7 +48,7 @@ def saque(saldo, valor_saque, extrato, numero_limite_saques, valor_limite_saque,
             extrato += f"Valor saque: R${valor_saque: .2f}\n"
     return saldo, extrato, contador
 
-def deposito(saldo, valor_deposito, extrato):
+def deposito(saldo, valor_deposito, extrato, /):
     if(valor_deposito < 0):
         print("Valor inválido!")
     else:
@@ -57,7 +57,7 @@ def deposito(saldo, valor_deposito, extrato):
         extrato += f"Valor depósito: R${valor_deposito: .2f}\n"
     return saldo, extrato
 
-def exibir_extrato(saldo, extrato = extrato):
+def exibir_extrato(saldo, /, *, extrato):
     print(f"""
 ..........EXTRATO..........""")
     
@@ -76,13 +76,12 @@ Saldo atual: R$ {saldo:.2f}
 def verifica_cpf(cpf, lista_clientes):
     for cliente in lista_clientes:
         if cliente["CPF"] == cpf:
-            return None
-    return lista_clientes
-    
+            return True
+    return False
+
 def cadastro_cliente(lista_clientes):
     cpf = input("Informe o CPF do cliente: ")
-    resultado = verifica_cpf(cpf, lista_clientes)
-    if resultado == None:
+    if verifica_cpf(cpf, lista_clientes):
         return print("Cliente já cadastrado")
     nome = input("Informe o nome do cliente: ")
     data_nascimento = input("Informe a data de nascimento do cliente: ")
@@ -98,18 +97,20 @@ def cadastro_cliente(lista_clientes):
 
 def cadastro_conta(lista_clientes, contador_conta, lista_contas):
     cpf = input("Informe o CPF do cliente: ")
-    resultado = verifica_cpf(cpf, lista_clientes)
-    for cliente in lista_clientes:
-        if resultado == None:
-            contador_conta += 1
-            conta = {
-            "CPF": cpf,
-            "Numero da Conta": contador_conta,
-            "Agência": "0001"
-            }
-            lista_contas.append(conta)
-            return contador_conta
-    return print("Cliente nao cadastrado")
+    if verifica_cpf(cpf, lista_clientes):
+        for cliente in lista_clientes:
+            if cliente['CPF'] == cpf:
+                contador_conta += 1
+                conta = {
+                    "Numero da Conta": contador_conta,
+                    "Agência": "0001",
+                    "Cliente": cliente
+                }
+                lista_contas.append(conta)
+                return contador_conta
+    else:
+        print("Cliente não cadastrado")
+    return contador_conta
 
 while True:
     Opcao = input(menu_cadastro).upper()
