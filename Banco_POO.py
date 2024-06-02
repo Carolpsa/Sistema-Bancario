@@ -1,3 +1,77 @@
+from abc import ABC, abstractmethod
+
+class Conta:
+    def __init__(self, saldo, numero, agencia, cliente, historico):
+        self._saldo = saldo
+        self._numero = numero
+        self._agencia = agencia
+        self._cliente = cliente
+        self._historico = historico
+
+    @classmethod
+    def nova_conta(cls, cliente, numero):
+        pass
+
+    def saldo(self):
+        pass
+
+    def sacar(self):
+        pass
+
+    def depositar(self):
+        pass
+
+
+class ContaCorrente(Conta):
+    def __init__(self, limite, limite_saques):
+        pass
+
+class Historico:
+    def __init__(self):
+        pass
+
+    def adicionar_transacao(self, transacao):
+        self.transacao = transacao
+        pass
+    
+
+class Transacao(ABC):
+    
+    @abstractmethod
+    def registrar(conta):
+        pass
+
+
+class Deposito(Transacao):
+    def __init__(self, valor):
+        self.valor = valor
+
+    def registrar(conta):
+        pass
+
+
+class Saque(Transacao):
+    def __init__(self, valor):
+        self.valor = valor
+        
+    def registrar(conta):
+        pass
+
+
+class Cliente:
+    def __init__(self, endereco, contas):
+        self.endereco = endereco
+        self.contas = contas
+
+    def realizar_transacao(self, conta, transacao):
+        self.conta = conta
+        self.transacao = transacao
+
+    def adicionar_conta(self, conta):
+        self.conta = conta
+        
+
+
 LIMITE_VALOR_SAQUE = 500.00
 LIMITE_QTD_SAQUE = 3
 saldo = 0.00
@@ -98,7 +172,6 @@ def cadastro_cliente(lista_clientes):
 
 def cadastro_conta(lista_clientes, contador_conta, lista_contas):
     cpf = input("Informe o CPF do cliente: ")
-    #if verifica_cpf(cpf, lista_clientes):
     for cliente in lista_clientes:
         if cliente['CPF'] == cpf:
             contador_conta += 1
