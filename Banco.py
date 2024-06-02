@@ -4,6 +4,7 @@ saldo = 0.00
 contador = 0
 contador_conta = 0
 extrato = ""
+agencia = "0001"
 lista_clientes=[]
 lista_contas=[]
 menu_operacoes = """ 
@@ -97,17 +98,16 @@ def cadastro_cliente(lista_clientes):
 
 def cadastro_conta(lista_clientes, contador_conta, lista_contas):
     cpf = input("Informe o CPF do cliente: ")
-    if verifica_cpf(cpf, lista_clientes):
-        for cliente in lista_clientes:
-            if cliente['CPF'] == cpf:
-                contador_conta += 1
-                conta = {
-                    "Numero da Conta": contador_conta,
-                    "Agência": "0001",
-                    "Cliente": cliente
-                }
-                lista_contas.append(conta)
-                return contador_conta
+    for cliente in lista_clientes:
+        if cliente['CPF'] == cpf:
+            contador_conta += 1
+            conta = {
+                "Numero da Conta": contador_conta,
+                "Agência": agencia,
+                "Cliente": cliente
+            }
+            lista_contas.append(conta)
+            return contador_conta
     else:
         print("Cliente não cadastrado")
     return contador_conta
