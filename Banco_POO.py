@@ -1,20 +1,24 @@
 from abc import ABC, abstractmethod
 
+AGENCIA = "001"
+
 class Conta:
-    def __init__(self, saldo, numero, agencia, cliente, historico):
-        self._saldo = saldo
+    def __init__(self, numero, cliente):
         self._numero = numero
-        self._agencia = agencia
         self._cliente = cliente
-        self._historico = historico
+        self._historico = Historico()
+        self._saldo = 0
+        self._agencia = AGENCIA
     
     def saldo(self):
         return self._saldo
 
     def sacar(self, valor):
         if valor > self._saldo:
+            print("Saldo insuficiente!")
             return False
         elif valor < 0:
+            print("Valor inválido")
             return False
         else: 
             self._saldo -= valor
@@ -31,18 +35,38 @@ class Conta:
     def nova_conta(cls, cliente, numero):
         cliente = cliente
         numero = numero
-        saldo = saldo
-        agencia = agencia
-        historico = historico
-        return cls(saldo, numero, agencia, cliente, historico)
+        saldo = 0
+        agencia = AGENCIA
+        historico = Historico()
+        return cls(numero, cliente)
 
 class ContaCorrente(Conta):
-    def __init__(self, saldo, numero, agencia, cliente, historico, limite, limite_saques):
-        super().__init__(saldo, numero, agencia, cliente, historico)
-        self._limite = limite
-        self._limite_saques = limite_saques
+    def __init__(self, numero, cliente):
+        super().__init__(numero, cliente)
+        self._limite = 500.00
+        self._limite_saques = 3
         self.contador_saques = 1
-        
+    
+    @property
+    def historico(self):
+        return self._historico
+
+    @property
+    def saldo(self):
+        return self._saldo
+
+    @property
+    def numero(self):
+        return self._numero
+
+    @property
+    def agencia(self):
+        return self._agencia
+
+    @property
+    def cliente(self):
+        return self._cliente        
+
     def sacar(self, valor):
         if valor > self._saldo:
             print("Saldo insuficiente!")
@@ -66,13 +90,14 @@ class ContaCorrente(Conta):
         cliente = cliente
         numero = numero
         saldo = 0
-        agencia = agencia
-        historico = historico
-        limite = limite
-        limite_saques = limite_saques
-        return cls(saldo, numero, agencia, cliente, historico, limite, limite_saques)
+        agencia = AGENCIA
+        historico = Historico()
+        limite = 500.00
+        limite_saques = 3
+        return cls(numero, cliente)
 
 class Transacao(ABC):
+    
     @abstractmethod
     def registrar(self, conta):
         pass
@@ -80,90 +105,64 @@ class Transacao(ABC):
 class Deposito(Transacao):
     def __init__(self, valor):
         self._valor = valor
-
+    
+    @property
+    def valor(self):
+        return self._valor    
+    
     def registrar(self, conta):
-        if conta.depositar(self._valor):
-            return f"Depósito no valor de: R${self._valor:.2f}" 
-
+        return conta.depositar(self._valor)
+        
 class Saque(Transacao):
     def __init__(self, valor):
         self._valor = valor
         
     def registrar(self, conta):
-        if conta.sacar(self._valor):
-            return f"Saque no valor de {self._valor:.2f}"
-            
+        return conta.sacar(self._valor)
+
+    @property
+    def valor(self):
+        return self._valor 
+
 class Historico:
     def __init__(self):
         self.lista_historico = []
-
+    
     def adicionar_transacao(self, transacao):
-        if transacao != None:
-            self.lista_historico.append(transacao)
-            return self.lista_historico
-       
+        self.lista_historico.append(f"{transacao.__class__.__name__}: R$ {transacao.valor:.2f}")
+        print(self.lista_historico)
+
 class Cliente:
-    def __init__(self, endereco, contas):
+    def __init__(self, endereco):
         self._endereco = endereco
-        self._contas = contas
+        self._contas = []
 
     def realizar_transacao(self, conta, transacao):
-        if transacao != None:
-            return print(transacao, f"\nSaldo: R$ {conta.saldo():.2f}")  
+        if transacao.registrar(conta):
+            conta.historico.adicionar_transacao(transacao)
         
     def adicionar_conta(self, conta):
         self._contas.append(conta)
         return self._contas
 
 class PessoaFisica(Cliente):
-    def __init__(self, endereco, contas, cpf, nome, data_nascimento):
-        super().__init__(endereco, contas)
+    def __init__(self, endereco, cpf, nome, data_nascimento):
+        super().__init__(endereco)
         self._cpf= cpf
         self._nome = nome
         self._data_nascimento = data_nascimento
 
-lista_contas1 = []
-lista_contas2 = []
-historico1 = Historico()
-historico2 = Historico()
 
-pessoa1 = PessoaFisica("Rua 01", lista_contas1, "01", "Carol", "16/12")
-conta1 = ContaCorrente(0, 1, "0001", pessoa1, historico1, 500.00, 3)
-pessoa1.adicionar_conta(conta1)
-conta2 = ContaCorrente(0, 2, "0001", pessoa1, historico2, 500.00, 3)
-pessoa1.adicionar_conta(conta2)
+pessoa1 = PessoaFisica("Avenida 01", "01", "Carol", "16/12/1987")
 
+conta1 = ContaCorrente.nova_conta(pessoa1, 1)
 deposito1 = Deposito(1000)
-transacao1 = deposito1.registrar(conta1)
-pessoa1.realizar_transacao(conta1, transacao1)
-historico1.adicionar_transacao(transacao1)
+pessoa1.realizar_transacao(conta1, deposito1)
+saque1 = Saque(100)
+pessoa1.realizar_transacao(conta1, saque1)
 
-saque1 = Saque(-200)
-transacao2 = saque1.registrar(conta1)
-pessoa1.realizar_transacao(conta1, transacao2)
-historico1.adicionar_transacao(transacao2)
-    
-saque1 = Saque(200)
-transacao3 = saque1.registrar(conta1)
-pessoa1.realizar_transacao(conta1, transacao3)
-historico1.adicionar_transacao(transacao3)
-
-saque1 = Saque(200)
-transacao4 = saque1.registrar(conta1)
-pessoa1.realizar_transacao(conta1, transacao4)
-historico1.adicionar_transacao(transacao4)
-
-saque1 = Saque(600)
-transacao5 = saque1.registrar(conta1)
-pessoa1.realizar_transacao(conta1, transacao5)
-historico1.adicionar_transacao(transacao5)
-
-saque1 = Saque(10)
-transacao6 = saque1.registrar(conta1)
-pessoa1.realizar_transacao(conta1, transacao6)
-historico1.adicionar_transacao(transacao6)
-
-deposito1 = Deposito(-1000)
-transacao7 = deposito1.registrar(conta1)
-pessoa1.realizar_transacao(conta1, transacao7)
-historico1.adicionar_transacao(transacao7)
+conta2 = ContaCorrente.nova_conta(pessoa1, 2)
+deposito2 = Deposito(900)
+pessoa1.realizar_transacao(conta2, deposito2)
+saque2 = Saque(10)
+pessoa1.realizar_transacao(conta2, saque2)
