@@ -36,12 +36,14 @@ O programa deve armazenar os usuários em uma lista. Um usuário é composto por
 
 ### Função criar conta
 O programa deve armazenar contas em uma lista. Uma conta é composta por: agência, número da conta e usuário. O número da conta é sequencial, iniciando em 1. O número da agência é fixo: "0001". O usuário pode ter mais de uma conta, mas uma conta pertence a somente um usuário.
+
 ___
 
 ## Versão 03
 Neste desafio iremos atualizar a implementação do sistema bancário, para armazenar os dados de clientes e contas bancárias em objetos ao invés de dicionários. O código deve seguir o modelo de classes UML. Adicionar classes para cliente e as operações bancárias: depósito e saque. 
 
 <img src="/UML.png">
+
 ___
 
 ## Versão 04
