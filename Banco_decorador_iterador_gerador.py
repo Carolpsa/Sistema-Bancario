@@ -124,7 +124,10 @@ class Deposito(Transacao):
     
     def registrar(self, conta):
         return conta.depositar(self._valor)
-        
+
+    def __str__(self):
+        return f"Deposito: R$ {self._valor:.2f}"
+
 class Saque(Transacao):
     def __init__(self, valor):
         self._valor = valor
@@ -136,12 +139,15 @@ class Saque(Transacao):
     def valor(self):
         return self._valor 
 
+    def __str__(self):
+        return f"Saque: R$ {self._valor:.2f}"
+
 class Historico:
     def __init__(self):
         self.lista_historico = []
     
     def adicionar_transacao(self, transacao):
-        self.lista_historico.append(f"{transacao.__class__.__name__}: R$ {transacao.valor:.2f}")
+        self.lista_historico.append(transacao)
     
     def gerar_extrato(self, conta):
         if not conta.historico.lista_historico:
@@ -152,7 +158,7 @@ class Historico:
     def imprimir_extrato(self, lista, conta):
         for item in lista:
             print(item)
-        print(f"Saldo: R${conta.saldo:.2f}")
+        print(f"Saldo: R$ {conta.saldo:.2f}")
 
     def gerar_relatorio(self, conta):
         if not conta.historico.lista_historico:
@@ -163,7 +169,7 @@ class Historico:
             for item in lista_saques:
                 yield item
         elif escolha == "D":
-            lista_depositos = [depositos for depositos in conta.historico.lista_historico if depositos.__class__.__name__ == "Saque"]
+            lista_depositos = [depositos for depositos in conta.historico.lista_historico if depositos.__class__.__name__ == "Deposito"]
             for item in lista_depositos:
                 yield item
         elif escolha == "T":    
@@ -225,6 +231,7 @@ menu = """
     Digite E para Extrato
     Digite C para Cadastrar Cliente
     Digite O para Cadastrar Conta
+    Digite R para Relatorio de Transacoes
     Digite Q para Sair
     
     .................................
@@ -235,7 +242,7 @@ def decorador_log(funcao):
     def envelope(*args, **kwargs):
         funcao(*args, **kwargs)
         log = datetime.now().strftime("%d/%m/%y às %H:%M:%S")
-        print(f"Operação {funcao.__name__} realizada em {log}")
+        print(f"Operação {(funcao.__name__).upper()} realizada em {log}")
     return envelope
 
 def verifica_cpf(cpf, lista_clientes):
@@ -324,6 +331,20 @@ def extrato():
     else:
         print("Cliente não cadastrado!")
 
+def relatorio():
+    cpf = input("Digite o CPF: ")
+    if verifica_cpf(cpf, lista_clientes):
+        pessoa = verifica_cpf(cpf, lista_clientes)
+        if verifica_conta(pessoa, lista_contas):
+            conta = verifica_conta(pessoa, lista_contas)
+            itens = conta.historico.gerar_relatorio(conta)
+            for item in itens:
+                print(item)
+        else:
+            print("Conta não cadastrada!")
+    else:
+        print("Cliente não cadastrado!")
+
 while True:
     Opcao = input(menu).upper()
 
@@ -341,7 +362,12 @@ while True:
             
     elif(Opcao == "E"):
         extrato()
-        
+
+    elif(Opcao == "R"):
+        relatorio()
+
+    # elif(Opcao == "L"):
+
     elif(Opcao == "Q"):
         print("Obrigada por utilizar nossos serviços!")
         break
