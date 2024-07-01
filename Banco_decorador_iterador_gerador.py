@@ -220,6 +220,23 @@ class PessoaFisica(Cliente):
         Data de nacimento: {self.data_nascimento}
         """
 
+class ContaIterador:
+    def __init__(self, contas):
+        self.contas = contas
+        self.contador = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        try:
+            conta = self.contas[self.contador]
+            self.contador += 1
+            return conta
+        except IndexError:
+            raise StopIteration
+
+
 lista_clientes = []
 lista_contas = []
 
@@ -232,6 +249,7 @@ menu = """
     Digite C para Cadastrar Cliente
     Digite O para Cadastrar Conta
     Digite R para Relatorio de Transacoes
+    Digite I para Relatorio de Contas
     Digite Q para Sair
     
     .................................
@@ -366,7 +384,9 @@ while True:
     elif(Opcao == "R"):
         relatorio()
 
-    # elif(Opcao == "L"):
+    elif(Opcao == "I"):
+        for conta in ContaIterador(lista_contas):
+            print(conta)
 
     elif(Opcao == "Q"):
         print("Obrigada por utilizar nossos serviços!")
