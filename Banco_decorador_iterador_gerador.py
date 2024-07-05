@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
+import pytz
 
 AGENCIA = "001"
 
@@ -37,12 +38,7 @@ class Conta:
 
     @classmethod
     def nova_conta(cls, cliente):
-        cliente = cliente
-        numero = cls.contador_conta
-        saldo = 0
-        agencia = AGENCIA
-        historico = Historico()
-        return cls(numero, cliente)
+        return cls(cliente)
 
 class ContaCorrente(Conta):
     
@@ -77,13 +73,13 @@ class ContaCorrente(Conta):
             print("Saldo insuficiente!")
             return False
         elif valor < 0:
-            print("Operação não realizada. Valor inválido!")
+            print("Valor inválido!")
             return False
         elif valor > self._limite:
-            print("Operação não realizada. Valor de saque acima do limite!")
+            print(f"Valor de saque acima do limite. O limite é de R$ {self._limite:.2f}")
             return False
         elif self.contador_saques > self._limite_saques:
-            print("Operação não realizada. Número de saques acima do permitido!")
+            print(f"Número de saques acima do limite. O limite é de {self._limite_saques} saques")
             return False
         else:
             self.contador_saques += 1
@@ -92,13 +88,6 @@ class ContaCorrente(Conta):
 
     @classmethod
     def nova_conta(cls, cliente):
-        cliente = cliente
-        numero = cls.contador_conta 
-        saldo = 0
-        agencia = AGENCIA
-        historico = Historico()
-        limite = 500.00
-        limite_saques = 3
         return cls(cliente)
     
     def __str__(self):
@@ -163,15 +152,26 @@ class Historico:
     def gerar_relatorio(self, conta):
         if not conta.historico.lista_historico:
             return print("Não foram realizadas movimentações")
-        escolha = input("S - Saques, D - Depositos, T - todas as transações: ").upper()
+        escolha = input("""
+        Selecione a opção desejada:
+        S - Listar todos os saques
+        D - Listar todos os depósitos
+        T - Listar todas as transações 
+        --> """).upper()
         if escolha == "S":
             lista_saques = [saques for saques in conta.historico.lista_historico if saques.__class__.__name__ == "Saque"]
-            for item in lista_saques:
-                yield item
+            if lista_saques:
+                for item in lista_saques:
+                    yield item
+            else:
+                print("Não foram realizados saques!")
         elif escolha == "D":
             lista_depositos = [depositos for depositos in conta.historico.lista_historico if depositos.__class__.__name__ == "Deposito"]
-            for item in lista_depositos:
-                yield item
+            if lista_depositos:
+                for item in lista_depositos:
+                    yield item
+            else:
+                print("Não foram realizados depositos!")
         elif escolha == "T":    
             for item in conta.historico.lista_historico:
                 yield item
@@ -212,14 +212,6 @@ class PessoaFisica(Cliente):
     def data_nascimento(self):
         return self._data_nascimento
 
-    def __str__(self):
-        return f"""
-        Nome: {self.nome}
-        CPF: {self.cpf}
-        Endereco: {self.endereco}
-        Data de nacimento: {self.data_nascimento}
-        """
-
 class ContaIterador:
     def __init__(self, contas):
         self.contas = contas
@@ -248,7 +240,7 @@ menu = """
     Digite E para Extrato
     Digite C para Cadastrar Cliente
     Digite O para Cadastrar Conta
-    Digite R para Relatorio de Transacoes
+    Digite R para Relatorio de Transações
     Digite I para Relatorio de Contas
     Digite Q para Sair
     
@@ -259,7 +251,7 @@ menu = """
 def decorador_log(funcao):
     def envelope(*args, **kwargs):
         funcao(*args, **kwargs)
-        log = datetime.now().strftime("%d/%m/%y às %H:%M:%S")
+        log = datetime.now(pytz.timezone("America/Sao_Paulo")).strftime("%d/%m/%y às %H:%M:%S")
         print(f"Operação {(funcao.__name__).upper()} realizada em {log}")
     return envelope
 
@@ -274,9 +266,6 @@ def verifica_conta(cliente, lista_contas):
         if conta.cliente == cliente:
             return conta
     return None
-
-def conta_iterador(lista_contas):
-    pass
 
 @decorador_log
 def cadastrar_cliente():
@@ -341,9 +330,7 @@ def extrato():
             conta = verifica_conta(pessoa, lista_contas)
             transacoes = conta.historico.gerar_extrato(conta)
             conta.historico.imprimir_extrato(transacoes, conta)
-            itens = conta.historico.gerar_relatorio(conta)
-            for item in itens:
-                print(item)
+
         else:
             print("Conta não cadastrada!")
     else:
