@@ -19,6 +19,7 @@ menu = """
     Digite O para Cadastrar Conta
     Digite R para Relatorio de Transações
     Digite I para Relatorio de Contas
+    Digite L para Listar Contas do Cliente
     Digite Q para Sair
     
     .................................
