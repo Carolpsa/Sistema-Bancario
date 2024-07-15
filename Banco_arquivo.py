@@ -1,7 +1,12 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
+from pathlib import Path
 import pytz
+import os
+import shutil
 
+
+ROOT_PATH = Path(__file__).parent
 AGENCIA = "001"
 
 class Conta:
@@ -250,9 +255,12 @@ menu = """
 
 def decorador_log(funcao):
     def envelope(*args, **kwargs):
-        funcao(*args, **kwargs)
+        resultado = funcao(*args, **kwargs)
         log = datetime.now(pytz.timezone("America/Sao_Paulo")).strftime("%d/%m/%y às %H:%M:%S")
-        print(f"Operação {(funcao.__name__).upper()} realizada em {log}")
+        nome = funcao.__name__
+        with open(ROOT_PATH / "log.txt", "a") as arquivo:
+            arquivo.write(f"Operacao {nome}, realizada em {log}, com resultado {resultado}, {args}, {kwargs} \n")
+        return resultado
     return envelope
 
 def verifica_cpf(cpf, lista_clientes):
@@ -271,14 +279,14 @@ def verifica_conta(cliente, lista_contas):
 def cadastrar_cliente():
     cpf = input("Digite o CPF: ")
     if verifica_cpf(cpf, lista_clientes):
-        print("Cliente já cadastrado!")
+        return print("Cliente já cadastrado!")
     else:
         nome = input("Digite o nome: ")
         data_nascimento = input("Digite a data de nascimento: ")
         endereco = input("Digite o endereço: ")
         pessoa = PessoaFisica(endereco, cpf, nome, data_nascimento)
         lista_clientes.append(pessoa)
-        print("Cliente cadastrado com sucesso!")
+        return print("Cliente cadastrado com sucesso!")
 
 @decorador_log 
 def cadastrar_conta():
@@ -288,9 +296,9 @@ def cadastrar_conta():
         conta = ContaCorrente.nova_conta(pessoa)
         pessoa.adicionar_conta(conta)
         lista_contas.append(conta)
-        print("Conta cadastrada com sucesso!")
+        return print("Conta cadastrada com sucesso!")
     else:
-        print("Cliente não cadastrado!")       
+        return print("Cliente não cadastrado!")       
 
 @decorador_log
 def saque():
